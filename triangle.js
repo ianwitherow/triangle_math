@@ -7,8 +7,10 @@ let height = 0;
 
 let previousPoint = null;
 let cancel = false;
+let animationRunning = false;
 
 const ctx = canvas.getContext("2d");
+const isMobile = /Mobi/.test(navigator.userAgent);
 const pointCountInput = document.getElementById("pointCountInput");
 const speedModifier = document.getElementById("speedModifier");
 const speedModifierInput = document.getElementById("speedModifierInput");
@@ -22,6 +24,9 @@ const cancelButton = document.getElementById("cancelButton");
 const runButton = document.getElementById("runButton");
 const clearButton = document.getElementById("clearButton");
 const saveButton = document.getElementById("saveButton");
+const settingsPanel = document.getElementById("settings");
+const toggleSettingsButton = document.getElementById("toggleSettingsButton");
+const help = document.getElementById("help");
 
 // Initial triangle points
 let initialPoints = [
@@ -31,6 +36,7 @@ let initialPoints = [
 ];
 
 resizeCanvas();
+setTimeout(resizeCanvas, 0);
 reset();
 
 /* Events */
@@ -55,6 +61,16 @@ saveButton.addEventListener("click", function() {
 runButton.addEventListener("click", function() {
   previousPoint = null;
   fillTriangle(+pointCountInput.value);
+
+});
+
+toggleSettingsButton.addEventListener("click", function(e) {
+  if (e.target.dataset.hidden === 'true') {
+    showSettings();
+  } else {
+    hideSettings();
+  }
+  resizeCanvas();
 });
 
 canvas.addEventListener("click", function(e) {
@@ -98,6 +114,7 @@ document.querySelectorAll("input").forEach(input => {
       input.value = localStorage.getItem(key);
     }
   }
+  resizeCanvas();
 });
 
 // Emit events to inputs in case they changed so that the UI updates accordingly
@@ -114,9 +131,15 @@ document.querySelectorAll("input").forEach(input => {
 
 /* Functions */
 function resizeCanvas() {
-  cancelAnimation();
-  width = window.innerWidth - 20;
-  height = width * .5;
+  if (animationRunning) {
+    cancelAnimation();
+  }
+  width = window.innerWidth - (canvas.offsetLeft * 2);
+  height = window.innerHeight - canvas.offsetTop - (canvas.offsetLeft * 2);
+
+  if (isMobile) {
+    height = window.innerHeight / 2;
+  }
 
   // create a temporary canvas obj to cache the pixel data //
   let temp_cnvs = document.createElement('canvas');
@@ -134,14 +157,27 @@ function resizeCanvas() {
   // resize & clear the original canvas and copy back in the cached pixel data //
   canvas.width = width; 
   canvas.height = height;
+
   ctx.drawImage(temp_cnvs, 0, 0);
   temp_ctx.clearRect(0, 0, width, height);
+}
 
-  //canvas.width = width;
-  //canvas.height = height;
+function hideSettings() {
+  toggleSettingsButton.innerHTML = "&#8650; Show Settings";
+  settingsPanel.style.display = "none";
+  toggleSettingsButton.dataset.hidden = true;
+  resizeCanvas();
+}
+
+function showSettings() {
+  toggleSettingsButton.innerHTML = "&#8648; Hide Settings";
+  settingsPanel.style.display = "block";
+  toggleSettingsButton.dataset.hidden = false;
+  resizeCanvas();
 }
 
 function cancelAnimation() {
+  animationRunning = false;
   cancel = true;
   progressMsg.innerHTML = " (canceled)";
   cancelButton.style.display = "none";
@@ -152,6 +188,7 @@ function cancelAnimation() {
 
 function modeChanged(e) {
   speedModifier.style.display = e.target.value === 'animated' ? 'block' : 'none';
+  resizeCanvas();
 }
 
 function checkCount(e) {
@@ -242,6 +279,10 @@ function getAllPoints() {
 }
 
 function fillTriangle() {
+  if (isMobile) {
+    hideSettings();
+  }
+
   cancel = false;
   const points = getAllPoints();
   const mode = document.querySelector('input[name="mode"]:checked').value;
@@ -251,6 +292,7 @@ function fillTriangle() {
     runButton.style.display = "none";
     clearButton.style.display = "none";
     saveButton.style.display = "none";
+    animationRunning = true;
     requestAnimationFrame(() => fillNextPoint(points, 0));
   } else {
     points.forEach((point, i) => {
@@ -264,6 +306,7 @@ function fillTriangle() {
 function fillNextPoint(points, index) {
   if (points.length <= index) {
     progress.innerHTML = "100%";
+    animationRunning = false;
     progressMsg.innerHTML = "";
     cancelButton.style.display = "none";
     runButton.style.display = "inline";

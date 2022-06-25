@@ -15,28 +15,33 @@
   </head>
   <body>
     <div style="margin: 0 auto">
-      <div style="padding: 50px">
-        Mode:
-        <br />
-        <label for="instant">
-          <input id="instant" type="radio" name="mode" value="instant" checked="true" /> Instant
-        </label>
-        <br />
-        <label for="animated">
-          <input id="animated" type="radio" name="mode" value="animated" /> Animated
-        </label>
-        <div id="speedModifier" style="display: none;">
-          Speed modifier: <input type="number" id="speedModifierInput" style="width: 35px;" value="1">x &nbsp;&nbsp;How fast the animation runs
+      <span id="help">Click anywhere to choose a starting point, or click Run!</span>
+      <div style="padding: 10px 20px">
+        <div id="settings">
+          Mode:
+          <br />
+          <label for="instant">
+            <input id="instant" type="radio" name="mode" value="instant" checked="true" /> Instant
+          </label>
+          <br />
+          <label for="animated">
+            <input id="animated" type="radio" name="mode" value="animated" /> Animated
+          </label>
+          <div id="speedModifier" style="display: none;">
+            Speed modifier: <input type="number" id="speedModifierInput" style="width: 35px;" value="1">x &nbsp;&nbsp;How fast the animation runs
+          </div>
+          <br />
+          <br />
+          <strong>Point count:</strong> <input type="number" value="5000" id="pointCountInput"> <span id="countNote"></span>
+          <br />
+          Color: <input type="text" id="colorInput" value="#ff79c5"> Just type a color, or a hex value (e.g., black, red, #BADA55)
+          <br />
+          Background: <input type="text" id="bgColorInput" value="#24252c">
+          <br />
+          Dot size: <input type="number" id="dotSizeInput" value="5"> Scale of 1 - 20 works well
+          <br />
         </div>
-        <br />
-        <br />
-        <strong>Point count:</strong> <input type="number" value="5000" id="pointCountInput"> <span id="countNote"></span>
-        <br />
-        Color: <input type="text" id="colorInput" value="#ff79c5"> Just type a color, or a hex value (e.g., black, red, #BADA55)
-        <br />
-        Background: <input type="text" id="bgColorInput" value="#24252c">
-        <br />
-        Dot size: <input type="number" id="dotSizeInput" value="5"> Scale of 1 - 20 works well
+        <button id="toggleSettingsButton" data-hidden="false">&#8648; Hide Settings</button>
         <br />
         <button id="cancelButton" style="display: none">Cancel</button>
         <button id="runButton">Run!</button>
@@ -44,14 +49,11 @@
         <button id="saveButton" style="display: none">Save</button>
         <span id="progress"></span>
         <span id="progressMsg"></span>
-        <br />
-        <br />
-        Click anywhere to choose a starting point, or click Run!
       </div>
       <canvas style="border: 1px solid #000;">
       </canvas>
     </div>
 
-    <script src="triangle.js?4"></script>
+    <script src="triangle.js?8"></script>
   </body>
 </html>
